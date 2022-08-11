@@ -48,6 +48,8 @@ void loop()
 
 This is used in the little demo in [main.cpp](https://github.com/danja/Esp32RotaryEncoder/blob/main/src/main.cpp)
 
+Note that the button is **not debounced**. If the operations called on a click of the button are very short-lived, multiple presses may be detected (and debouncing will be needed).
+
 ### TODO
 
 - remove acceleration
