@@ -12,7 +12,14 @@ The specific encoders I got have built-in push-button, and came mounted on a sma
 
 ![encoder](https://github.com/danja/Esp32RotaryEncoder/blob/main/images/encoder.png)
 
-I got mine very cheap from AZDelivery on Amazon. Other similar encoders should work with this library, but the values given by `setMode(...)` (TODO) may need changing (the PCB has pullup/pulldown? resistors).
+I got mine very cheap from AZDelivery on Amazon. Other similar encoders should work with this library, but these values may need setting to something different (the PCB has pullup/pulldown? resistors) :
+
+````
+    pinMode(ENCODER_CLK, INPUT_PULLDOWN);
+    pinMode(ENCODER_DT, INPUT_PULLDOWN);
+    pinMode(ENCODER_SW, INPUT_PULLDOWN);
+    ```
+
 
 ### Usage
 
@@ -22,28 +29,30 @@ For dev, this repo is currently set up as a PlatformIO (on VSCode on Ubuntu) pro
 
 Core operation is:
 
-```
+````
+
 void setup()
 {
-  Serial.begin(115200);
-  encoder.setup(encoderEvent, buttonEvent); // pass the callback functions (leave as-is)
+Serial.begin(115200);
+encoder.setup(encoderEvent, buttonEvent); // pass the callback functions (leave as-is)
 }
 
 void loop()
 {
-  if (encoder.buttonClicked()) // look at a flag
-  {
-    Serial.println("click!"); // do stuff
-    encoder.resetButton();    // reset the flag
-  }
-
-  if (encoder.valueChanged()) // look at a flag
-  {
-    Serial.print("Value :"); // do stuff
-    Serial.println(encoder.getValue());
-    encoder.resetValue(); // reset the flag
-  }
+if (encoder.buttonClicked()) // look at a flag
+{
+Serial.println("click!"); // do stuff
+encoder.resetButton(); // reset the flag
 }
+
+if (encoder.valueChanged()) // look at a flag
+{
+Serial.print("Value :"); // do stuff
+Serial.println(encoder.getValue());
+encoder.resetValue(); // reset the flag
+}
+}
+
 ```
 
 This is used in the little demo in [main.cpp](https://github.com/danja/Esp32RotaryEncoder/blob/main/src/main.cpp)
@@ -53,7 +62,6 @@ Note that the button is **not debounced**. If the operations called on a click o
 ### TODO
 
 - remove acceleration
-- add mode() function for optional pullup on GPIO inputs
 - add (minimal) value range setup
 
 ### Origins
@@ -78,3 +86,12 @@ For ease of use in (my) application :
 - changed to flag-orientation
 
 See also : https://www.circuitsathome.com/mcu/reading-rotary-encoder-on-arduino/
+
+---
+
+I haven't figured out a good way to avoid the ugly callback bit. Possible solutions :
+
+https://gist.github.com/mihids/64588b533063e412b9c0
+
+https://isocpp.org/wiki/faq/pointers-to-members
+```

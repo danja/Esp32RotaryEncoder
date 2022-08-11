@@ -16,6 +16,11 @@ void IRAM_ATTR buttonEvent();
 void setup()
 {
   Serial.begin(115200);
+  /* may need to modify for different encoders
+    pinMode(ENCODER_CLK, INPUT_PULLDOWN);
+    pinMode(ENCODER_DT, INPUT_PULLDOWN);
+    pinMode(ENCODER_SW, INPUT_PULLDOWN);
+    */
   encoder.setup(encoderEvent, buttonEvent); // pass the callback functions (leave as-is)
 }
 
