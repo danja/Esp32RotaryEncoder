@@ -60,7 +60,7 @@ Note that the button is **not debounced**. If the operations called on a click o
 
 Largely derived from [ai-esp32-rotary-encoder](https://github.com/igorantolic/ai-esp32-rotary-encoder).
 
-While working on [Dreamachine](https://github.com/danja/dreamachine) I started using the [ai-esp32-rotary-encoder](https://github.com/igorantolic/ai-esp32-rotary-encoder) but found that although it included quite sophisticated features, I didn't really need them. More significantly the general approach didn't work the way I wanted and so I've stripped it back and modified it to better fit my requirements.
+While working on [Dreamachine](https://github.com/danja/dreamachine) I started using the [ai-esp32-rotary-encoder](https://github.com/igorantolic/ai-esp32-rotary-encoder) libraries but found that although it included quite sophisticated features, I didn't really need them. More significantly the general approach didn't work the way I wanted and so I've stripped it back and modified it to better fit my requirements.
 
 For cleaner operation:
 
