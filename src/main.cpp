@@ -1,5 +1,4 @@
 #include <Esp32RotaryEncoder.h>
-#include <RotaryEncoder.h>
 
 // GPIO ports for rotary encoders
 const int ENCODER_CLK = 34;
@@ -8,39 +7,42 @@ const int ENCODER_SW = 16;
 
 const int ENCODER_STEPS = 10;
 
-RotaryEncoder encoder = RotaryEncoder(ENCODER_CLK, ENCODER_DT, ENCODER_SW, ENCODER_STEPS);
+Esp32RotaryEncoder encoder = Esp32RotaryEncoder(ENCODER_CLK, ENCODER_DT, ENCODER_SW);
 
 // forward declarations
-void IRAM_ATTR readEncoderISR();
-void IRAM_ATTR readButtonISR();
+void IRAM_ATTR encoderEvent();
+void IRAM_ATTR buttonEvent();
 
 void setup()
 {
   Serial.begin(115200);
-
-  encoder.setup(readEncoderISR, readButtonISR);
+  encoder.setup(encoderEvent, buttonEvent); // pass the callback functions (leave as-is)
 }
 
 void loop()
 {
-
-  if (encoder.changed())
+  if (encoder.buttonClicked()) // look at a flag
   {
-    Serial.print("Selected value is ");
-    Serial.println(encoder.getValue(), 1);
+    Serial.println("click!"); // do stuff
+    encoder.resetButton();    // reset the flag
+  }
+
+  if (encoder.valueChanged()) // look at a flag
+  {
+    Serial.print("Value :"); // do stuff
+    Serial.println(encoder.getValue());
+    encoder.resetValue(); // reset the flag
   }
 }
 
-void IRAM_ATTR readEncoderISR()
+//// I've not found a better way of passing callbacks to the interrupt functions
+//// modify at your own risk!
+void IRAM_ATTR encoderEvent()
 {
-  encoder.readEncoder_ISR();
-  Serial.print("interrupt "); //// anything in here has to happen really fast
-  Serial.println(encoder.getValue(), 1);
+  encoder.updateValue();
 }
 
-void IRAM_ATTR readButtonISR()
+void IRAM_ATTR buttonEvent()
 {
   encoder.readButton_ISR();
-  Serial.print("button interrupt "); //// anything in here has to happen really fast
-                                     // Serial.println(encoder2.getValue(), 1);
 }
