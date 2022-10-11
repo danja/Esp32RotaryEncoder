@@ -4,7 +4,9 @@ Minimal library for interfacing rotary encoders on the ESP32
 
 ### Status
 
-**2022-08-11** basically working but needs tweaks, have to try in use
+**2022-10-10** total code rewrite in progress!!
+
+unusable for now...
 
 ### Target Devices
 
