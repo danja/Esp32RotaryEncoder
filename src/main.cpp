@@ -15,68 +15,53 @@ RotaryEncoder encoder2 = RotaryEncoder(ENCODER_2_CLK, ENCODER_2_DT, ENCODER_2_SW
 
 void setup()
 {
-    // encoder1.init(ENCODER_1_CLK, ENCODER_1_DT, ENCODER_1_SW);
-    // encoder2.init(ENCODER_2_CLK, ENCODER_2_DT, ENCODER_2_SW);
-
     Serial.begin(115200);
+    // setScale(float minValue, float maxValue, float stepSize, bool invert, bool circleValues)
+    encoder1.setScale(0, 10, 0.1, false, true);
 }
 
-// A turn counter for the rotary encoder (negative = anti-clockwise)
-int rotationCounter = 200;
+// position of each rotary encoder
+// int position1 = 0;
+// int position2 = 0;
 
 volatile bool RotaryEncoder::moved = false;
 
-void handleChange1(long value)
+void handleChange1(float value)
 {
-    rotationCounter += value;
     Serial.print("A : ");
-    Serial.print(value < 1 ? "L" : "R");
-    Serial.println(rotationCounter);
+    Serial.println(value);
 }
 
-void handleChange2(long value)
+void handleChange2(float value)
 {
-    rotationCounter += value;
     Serial.print("B : ");
-    Serial.print(value < 1 ? "L" : "R");
-    Serial.println(rotationCounter);
+    Serial.println(value);
 }
 
 void loop()
 {
-    //  delay(100);
-
-    // Has rotary encoder moved?
-    if (RotaryEncoder::moved) // RotaryEncoder::moved
+    if (RotaryEncoder::moved)
     {
-        int8_t rotationValue = encoder1.read();
+        int8_t rotationValue1 = encoder1.read();
         int8_t rotationValue2 = encoder2.read();
 
         // If valid movement, do something
-        if (rotationValue != 0)
+        if (rotationValue1 != 0)
         {
-            handleChange1(rotationValue);
-            //   RotaryEncoder::moved = false;
+            handleChange1(encoder1.value());
         }
 
         // If valid movement, do something
         if (rotationValue2 != 0)
         {
-            handleChange2(rotationValue2);
-            // RotaryEncoder::moved = false;
+            handleChange2(encoder2.value());
         }
     }
 
     if (digitalRead(ENCODER_1_SW) == LOW)
     {
-        rotationCounter = 0;
+        // position1 = 0;
         Serial.print("X");
-        Serial.println(rotationCounter);
-
-        // Wait until button released (demo only! Blocking call!)
-        while (digitalRead(ENCODER_1_SW) == LOW)
-        {
-            delay(100);
-        }
+        //     Serial.println(position1);
     }
 }

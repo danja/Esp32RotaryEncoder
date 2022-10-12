@@ -7,19 +7,21 @@ class RotaryEncoder
 {
 public:
     RotaryEncoder(int gpioCLK, int gpioDT, int gpioSW);
-    //    RotaryEncoder();
-    // void init(int gpioCLK, int gpioDT, int gpioSW);
-    //  void init(int gpioCLK, int gpioDT, int gpioSW);
-    void setScale(long minValue, long maxValue, long steps, boolean invert, bool circleValues);
-    void operate();
 
-    // Interrupt routine just sets a flag when rotation is detected
+    void setScale(float minValue, float maxValue, float stepSize, boolean invert, bool circleValues);
+    // void operate();
+
+    // Interrupt routine sets a flag when rotation is detected
     static void IRAM_ATTR detect();
 
-    int read();
-    // Flag from interrupt routine (moved=true)
+    // change flag
+    static volatile bool moved;
 
-    static volatile bool moved; //
+    // returns the raw movement
+    int read();
+
+    // returns the scaled value
+    float value();
 
 private:
     int gpioCLK;
@@ -29,9 +31,12 @@ private:
     int lrmem = 3;
     int lrsum = 0;
 
-    long steps = 100;
-    long minValue = 0;
-    long maxValue = 100;
+    // int move = 0;
+    long position = 0;
+
+    float stepSize = 1;
+    float minValue = 0;
+    float maxValue = 100;
     bool circleValues = false;
     bool invert = false;
 };

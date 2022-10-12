@@ -1,17 +1,11 @@
 #include <Arduino.h>
 #include <RotaryEncoder.h>
 
-// Interrupt routine just sets a flag when rotation is detected
+// Interrupt routine sets a flag when rotation is detected
 void IRAM_ATTR RotaryEncoder::detect()
 {
 	RotaryEncoder::moved = true;
 }
-
-/*
-RotaryEncoder::RotaryEncoder()
-{
-}
-*/
 
 RotaryEncoder::RotaryEncoder(int gpioCLK, int gpioDT, int gpioSW)
 {
@@ -27,13 +21,47 @@ RotaryEncoder::RotaryEncoder(int gpioCLK, int gpioDT, int gpioSW)
 	attachInterrupt(digitalPinToInterrupt(gpioDT), RotaryEncoder::detect, CHANGE);
 }
 
-void RotaryEncoder::setScale(long minValue, long maxValue, long steps, bool invert, bool circleValues)
+void RotaryEncoder::setScale(float minValue, float maxValue, float stepSize, bool invert, bool circleValues)
 {
-	this->steps = steps;
 	this->minValue = minValue;
 	this->maxValue = maxValue;
+	this->stepSize = stepSize;
 	this->invert = invert;
 	this->circleValues = circleValues;
+}
+
+float RotaryEncoder::value()
+{
+	// move me
+	int steps = (maxValue - minValue) / stepSize;
+
+	if (circleValues)
+	{
+		if (position > steps)
+		{
+			position = 0;
+		}
+		if (position < 0)
+		{
+			position = steps;
+		}
+	}
+	else
+	{
+		if (position > steps)
+		{
+			position = steps;
+		}
+		if (position < 0)
+		{
+			position = 0;
+		}
+	}
+
+	float value = ((float)position) * stepSize + minValue;
+
+	return value;
+	// this->position;
 }
 
 // Rotary encoder has moved (interrupt tells us) but what happened?
@@ -64,6 +92,7 @@ int RotaryEncoder::read()
 	/* encoder not in the neutral (detent) state */
 	if (this->lrsum % 4 != 0)
 	{
+		// this->move = 0;
 		return 0;
 	}
 
@@ -71,6 +100,12 @@ int RotaryEncoder::read()
 	if (this->lrsum == 4)
 	{
 		this->lrsum = 0;
+		if (this->invert)
+		{
+			this->position--;
+			return -1;
+		}
+		this->position++;
 		return 1;
 	}
 
@@ -78,10 +113,16 @@ int RotaryEncoder::read()
 	if (this->lrsum == -4)
 	{
 		this->lrsum = 0;
+		if (this->invert)
+		{
+			this->position++;
+			return 1;
+		}
+		this->position--;
 		return -1;
 	}
 
-	// An impossible rotation has been detected - ignore the movement
+	// An invalid rotation has been detected - ignore
 	this->lrsum = 0;
 	return 0;
 }
