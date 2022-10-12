@@ -15,6 +15,8 @@ RotaryEncoder encoder2 = RotaryEncoder(ENCODER_2_CLK, ENCODER_2_DT, ENCODER_2_SW
 
 void setup()
 {
+    // encoder1.init(ENCODER_1_CLK, ENCODER_1_DT, ENCODER_1_SW);
+    // encoder2.init(ENCODER_2_CLK, ENCODER_2_DT, ENCODER_2_SW);
 
     Serial.begin(115200);
 }
@@ -22,22 +24,46 @@ void setup()
 // A turn counter for the rotary encoder (negative = anti-clockwise)
 int rotationCounter = 200;
 
-volatile bool RotaryEncoder::rotaryEncoder = false;
+volatile bool RotaryEncoder::moved = false;
+
+void handleChange1(long value)
+{
+    rotationCounter += value;
+    Serial.print("A : ");
+    Serial.print(value < 1 ? "L" : "R");
+    Serial.println(rotationCounter);
+}
+
+void handleChange2(long value)
+{
+    rotationCounter += value;
+    Serial.print("B : ");
+    Serial.print(value < 1 ? "L" : "R");
+    Serial.println(rotationCounter);
+}
 
 void loop()
 {
+    //  delay(100);
+
     // Has rotary encoder moved?
-    if (RotaryEncoder::rotaryEncoder) // RotaryEncoder::rotaryEncoder
+    if (RotaryEncoder::moved) // RotaryEncoder::moved
     {
-        // Get the movement (if valid)
-        int8_t rotationValue = encoder1.checkRotaryEncoder();
+        int8_t rotationValue = encoder1.read();
+        int8_t rotationValue2 = encoder2.read();
 
         // If valid movement, do something
         if (rotationValue != 0)
         {
-            rotationCounter += rotationValue * 5;
-            Serial.print(rotationValue < 1 ? "L" : "R");
-            Serial.println(rotationCounter);
+            handleChange1(rotationValue);
+            //   RotaryEncoder::moved = false;
+        }
+
+        // If valid movement, do something
+        if (rotationValue2 != 0)
+        {
+            handleChange2(rotationValue2);
+            // RotaryEncoder::moved = false;
         }
     }
 
