@@ -1,11 +1,22 @@
 #include <Arduino.h>
 #include <RotaryEncoder.h>
 
-// Interrupt routine sets a flag when rotation is detected
-void IRAM_ATTR RotaryEncoder::detect()
+#define BUTTON_BLANK_TIME 200
+
+// Interrupt routine sets a flag when rotation is detected on any encoder
+void IRAM_ATTR RotaryEncoder::onEncoderChange()
 {
 	RotaryEncoder::moved = true;
 }
+
+// Interrupt routine sets a flag when any button is pressed
+void IRAM_ATTR RotaryEncoder::onButtonClick()
+{
+	RotaryEncoder::clicked = true;
+}
+
+volatile bool RotaryEncoder::moved = false;
+volatile bool RotaryEncoder::clicked = false;
 
 RotaryEncoder::RotaryEncoder(int gpioCLK, int gpioDT, int gpioSW)
 {
@@ -13,12 +24,13 @@ RotaryEncoder::RotaryEncoder(int gpioCLK, int gpioDT, int gpioSW)
 	this->gpioDT = gpioDT;
 	this->gpioSW = gpioSW;
 
-	pinMode(this->gpioCLK, INPUT_PULLDOWN);
-	pinMode(this->gpioDT, INPUT_PULLDOWN);
-	pinMode(this->gpioSW, INPUT_PULLDOWN);
+	pinMode(gpioCLK, INPUT_PULLDOWN);
+	pinMode(gpioDT, INPUT_PULLDOWN);
+	pinMode(gpioSW, INPUT_PULLUP);
 
-	attachInterrupt(digitalPinToInterrupt(gpioCLK), RotaryEncoder::detect, CHANGE);
-	attachInterrupt(digitalPinToInterrupt(gpioDT), RotaryEncoder::detect, CHANGE);
+	attachInterrupt(digitalPinToInterrupt(gpioCLK), RotaryEncoder::onEncoderChange, CHANGE);
+	attachInterrupt(digitalPinToInterrupt(gpioDT), RotaryEncoder::onEncoderChange, CHANGE);
+	attachInterrupt(digitalPinToInterrupt(gpioSW), RotaryEncoder::onButtonClick, FALLING);
 }
 
 void RotaryEncoder::setScale(float minValue, float maxValue, float stepSize, bool invert, bool circleValues)
@@ -61,12 +73,38 @@ float RotaryEncoder::value()
 	float value = ((float)position) * stepSize + minValue;
 
 	return value;
-	// this->position;
+}
+
+bool RotaryEncoder::readButton()
+{
+	long elapsed = millis() - this->timer;
+
+	if (elapsed < BUTTON_BLANK_TIME)
+	{
+		RotaryEncoder::clicked = false;
+		return false;
+	}
+	if (!RotaryEncoder::clicked)
+	{
+		return false;
+	}
+
+	int8_t button = digitalRead(this->gpioSW);
+
+	if (!button)
+	{
+		return false;
+	}
+
+	this->timer = millis();
+	RotaryEncoder::clicked = false;
+
+	return true;
 }
 
 // Rotary encoder has moved (interrupt tells us) but what happened?
 // See https://www.pinteric.com/rotary.html
-int RotaryEncoder::read()
+int RotaryEncoder::readEncoder()
 {
 	// Reset the flag that brought us here (from ISR)
 	RotaryEncoder::moved = false;
@@ -79,9 +117,11 @@ int RotaryEncoder::read()
 	//	Serial.println(this->gpioCLK);
 	//	Serial.println(this->gpioDT);
 
-	// Read BOTH pin states to deterimine validity of rotation (ie not just switch bounce)
+	// Read BOTH pin states to determine validity of rotation
+	// portENTER_CRITICAL_ISR(&(this->encoderMux));
 	int8_t l = digitalRead(this->gpioCLK);
 	int8_t r = digitalRead(this->gpioDT);
+	// portEXIT_CRITICAL_ISR(&(this->encoderMux));
 
 	// Move previous value 2 bits to the left and add in our new values
 	this->lrmem = ((this->lrmem & 0x03) << 2) + 2 * l + r;
