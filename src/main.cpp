@@ -12,19 +12,12 @@ const int ENCODER_2_SW = 4;
 
 RotaryEncoder encoder1 = RotaryEncoder(ENCODER_1_CLK, ENCODER_1_DT, ENCODER_1_SW);
 RotaryEncoder encoder2 = RotaryEncoder(ENCODER_2_CLK, ENCODER_2_DT, ENCODER_2_SW);
-// volatile bool RotaryEncoder::moved = false;
-// volatile bool RotaryEncoder::clicked = false;
 
 void setup()
 {
     Serial.begin(115200);
-    // setScale(float minValue, float maxValue, float stepSize, bool invert, bool circleValues)
-    encoder1.setScale(0, 10, 0.1, false, true);
+    encoder1.setScale(10, 20, 0.1, false, true);
 }
-
-// position of each rotary encoder
-// int position1 = 0;
-// int position2 = 0;
 
 void handleEncoder1(float value)
 {
