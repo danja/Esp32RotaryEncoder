@@ -6,7 +6,9 @@
 class RotaryEncoder
 {
 public:
-    RotaryEncoder(int gpioCLK, int gpioDT, int gpioSW);
+    RotaryEncoder();
+
+    void init(int gpioCLK, int gpioDT, int gpioSW);
 
     portMUX_TYPE encoderMux = portMUX_INITIALIZER_UNLOCKED;
     portMUX_TYPE buttonMux = portMUX_INITIALIZER_UNLOCKED;

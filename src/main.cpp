@@ -2,20 +2,24 @@
 #include <RotaryEncoder.h>
 
 // GPIO ports for rotary encoders
+
 const int ENCODER_1_CLK = 34;
 const int ENCODER_1_DT = 35;
-const int ENCODER_1_SW = 16;
+const int ENCODER_1_SW = 4;
 
 const int ENCODER_2_CLK = 36;
 const int ENCODER_2_DT = 39;
-const int ENCODER_2_SW = 4;
+const int ENCODER_2_SW = 16;
 
-RotaryEncoder encoder1 = RotaryEncoder(ENCODER_1_CLK, ENCODER_1_DT, ENCODER_1_SW);
-RotaryEncoder encoder2 = RotaryEncoder(ENCODER_2_CLK, ENCODER_2_DT, ENCODER_2_SW);
+RotaryEncoder encoder1;
+RotaryEncoder encoder2;
+// RotaryEncoder encoder1 = RotaryEncoder(ENCODER_1_CLK, ENCODER_1_DT, ENCODER_1_SW);
 
 void setup()
 {
     Serial.begin(115200);
+    encoder1.init(ENCODER_1_CLK, ENCODER_1_DT, ENCODER_1_SW);
+    encoder2.init(ENCODER_2_CLK, ENCODER_2_DT, ENCODER_2_SW);
     encoder1.setScale(10, 20, 0.1, false, true);
 }
 

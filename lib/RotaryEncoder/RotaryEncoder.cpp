@@ -18,7 +18,9 @@ void IRAM_ATTR RotaryEncoder::onButtonClick()
 volatile bool RotaryEncoder::moved = false;
 volatile bool RotaryEncoder::clicked = false;
 
-RotaryEncoder::RotaryEncoder(int gpioCLK, int gpioDT, int gpioSW)
+RotaryEncoder::RotaryEncoder() {}
+
+void RotaryEncoder::init(int gpioCLK, int gpioDT, int gpioSW)
 {
 	this->gpioCLK = gpioCLK;
 	this->gpioDT = gpioDT;
@@ -109,13 +111,7 @@ int RotaryEncoder::readEncoder()
 	// Reset the flag that brought us here (from ISR)
 	RotaryEncoder::moved = false;
 
-	//	static uint8_t lrmem = 3;
-	//	static int lrsum = 0;
 	static int8_t TRANS[] = {0, -1, 1, 14, 1, 0, 14, -1, -1, 14, 0, 1, 14, 1, -1, 0};
-
-	//	Serial.println("Reading ");
-	//	Serial.println(this->gpioCLK);
-	//	Serial.println(this->gpioDT);
 
 	// Read BOTH pin states to determine validity of rotation
 	// portENTER_CRITICAL_ISR(&(this->encoderMux));
