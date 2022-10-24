@@ -13,14 +13,15 @@ const int ENCODER_2_SW = 16;
 
 RotaryEncoder encoder1;
 RotaryEncoder encoder2;
-// RotaryEncoder encoder1 = RotaryEncoder(ENCODER_1_CLK, ENCODER_1_DT, ENCODER_1_SW);
 
 void setup()
 {
     Serial.begin(115200);
     encoder1.init(ENCODER_1_CLK, ENCODER_1_DT, ENCODER_1_SW);
     encoder2.init(ENCODER_2_CLK, ENCODER_2_DT, ENCODER_2_SW);
-    encoder1.setScale(10, 20, 0.1, false, true);
+
+    //  void setScale(float startValue, float minValue, float maxValue, float stepSize, boolean invert, bool circleValues);
+    encoder1.setScale(1, 10, 20, 0.1, false, true);
 }
 
 void handleEncoder1(float value)

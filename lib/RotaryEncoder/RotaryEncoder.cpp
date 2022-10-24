@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include <RotaryEncoder.h>
 
-#define BUTTON_BLANK_TIME 200
+#define BUTTON_BLANK_TIME 500
 
 // Interrupt routine sets a flag when rotation is detected on any encoder
 void IRAM_ATTR RotaryEncoder::onEncoderChange()
@@ -35,36 +35,41 @@ void RotaryEncoder::init(int gpioCLK, int gpioDT, int gpioSW)
 	attachInterrupt(digitalPinToInterrupt(gpioSW), RotaryEncoder::onButtonClick, FALLING);
 }
 
-void RotaryEncoder::setScale(float minValue, float maxValue, float stepSize, bool invert, bool circleValues)
+void RotaryEncoder::setScale(float startValue, float minValue, float maxValue, float stepSize, bool invert, bool circleValues)
 {
+	this->setValue(startValue);
 	this->minValue = minValue;
 	this->maxValue = maxValue;
 	this->stepSize = stepSize;
 	this->invert = invert;
 	this->circleValues = circleValues;
+	this->nSteps = (maxValue - minValue) / stepSize;
 }
 
+void RotaryEncoder::setValue(float value)
+{
+	position = (value - minValue) / stepSize;
+}
+
+// I don't like the side effects!
 float RotaryEncoder::value()
 {
-	// move me
-	int steps = (maxValue - minValue) / stepSize;
-
 	if (circleValues)
 	{
-		if (position > steps)
+		if (position > nSteps)
 		{
 			position = 0;
 		}
 		if (position < 0)
 		{
-			position = steps;
+			position = nSteps;
 		}
 	}
 	else
 	{
-		if (position > steps)
+		if (position > nSteps)
 		{
-			position = steps;
+			position = nSteps;
 		}
 		if (position < 0)
 		{

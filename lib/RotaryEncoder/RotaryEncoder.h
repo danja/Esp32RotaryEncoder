@@ -13,7 +13,7 @@ public:
     portMUX_TYPE encoderMux = portMUX_INITIALIZER_UNLOCKED;
     portMUX_TYPE buttonMux = portMUX_INITIALIZER_UNLOCKED;
 
-    void setScale(float minValue, float maxValue, float stepSize, boolean invert, bool circleValues);
+    void setScale(float startValue, float minValue, float maxValue, float stepSize, boolean invert, bool circleValues);
     // void operate();
 
     // Interrupt routine sets a flag when rotation is detected
@@ -30,6 +30,8 @@ public:
     // returns the raw movement
     int readEncoder();
     bool readButton();
+
+    void setValue(float value);
 
     // returns the scaled value
     float value();
@@ -48,6 +50,7 @@ private:
     long position = 0;
 
     float stepSize = 1;
+    int nSteps = 0;
     float minValue = 0;
     float maxValue = 100;
     bool circleValues = false;
