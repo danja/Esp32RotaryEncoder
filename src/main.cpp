@@ -20,8 +20,22 @@ void setup()
     encoder1.init(ENCODER_1_CLK, ENCODER_1_DT, ENCODER_1_SW);
     encoder2.init(ENCODER_2_CLK, ENCODER_2_DT, ENCODER_2_SW);
 
-    //  void setScale(float startValue, float minValue, float maxValue, float stepSize, boolean invert, bool circleValues);
-    encoder1.setScale(1, 10, 20, 0.1, false, true);
+    //  void configure(float startValue, float minValue, float maxValue, float stepSize, boolean invert, bool circleValues);
+    encoder1.configure(1, 10, 20, 0.1, false, true);
+}
+
+void showConfig(RotaryEncoder encoder)
+{
+    Serial.print("minValue : ");
+    Serial.println(encoder.minValue);
+    Serial.print("maxValue : ");
+    Serial.println(encoder.maxValue);
+    Serial.print("stepSize : ");
+    Serial.println(encoder.stepSize);
+    Serial.print("invert : ");
+    Serial.println(encoder.invert);
+    Serial.print("circleValues : ");
+    Serial.println(encoder.circleValues);
 }
 
 void handleEncoder1(float value)
@@ -59,9 +73,11 @@ void loop()
     if (encoder1.readButton())
     {
         Serial.println("Button 1");
+        showConfig(encoder1);
     }
     if (encoder2.readButton())
     {
         Serial.println("Button 2");
+        showConfig(encoder2);
     }
 }

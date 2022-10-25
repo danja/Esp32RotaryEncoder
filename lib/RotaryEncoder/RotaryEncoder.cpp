@@ -35,7 +35,7 @@ void RotaryEncoder::init(int gpioCLK, int gpioDT, int gpioSW)
 	attachInterrupt(digitalPinToInterrupt(gpioSW), RotaryEncoder::onButtonClick, FALLING);
 }
 
-void RotaryEncoder::setScale(float startValue, float minValue, float maxValue, float stepSize, bool invert, bool circleValues)
+void RotaryEncoder::configure(float startValue, float minValue, float maxValue, float stepSize, bool invert, bool circleValues)
 {
 	this->setValue(startValue);
 	this->minValue = minValue;

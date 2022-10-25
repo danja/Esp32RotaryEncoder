@@ -13,7 +13,7 @@ public:
     portMUX_TYPE encoderMux = portMUX_INITIALIZER_UNLOCKED;
     portMUX_TYPE buttonMux = portMUX_INITIALIZER_UNLOCKED;
 
-    void setScale(float startValue, float minValue, float maxValue, float stepSize, boolean invert, bool circleValues);
+    void configure(float startValue, float minValue, float maxValue, float stepSize, boolean invert, bool circleValues);
     // void operate();
 
     // Interrupt routine sets a flag when rotation is detected
@@ -36,6 +36,12 @@ public:
     // returns the scaled value
     float value();
 
+    float minValue = 0;
+    float maxValue = 100;
+    float stepSize = 1;
+    bool circleValues = false;
+    bool invert = false;
+
 private:
     int gpioCLK;
     int gpioDT;
@@ -49,12 +55,7 @@ private:
     // int move = 0;
     long position = 0;
 
-    float stepSize = 1;
     int nSteps = 100;
-    float minValue = 0;
-    float maxValue = 100;
-    bool circleValues = false;
-    bool invert = false;
 };
 
 #endif
