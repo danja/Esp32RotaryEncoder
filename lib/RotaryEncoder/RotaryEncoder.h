@@ -50,7 +50,7 @@ private:
     long position = 0;
 
     float stepSize = 1;
-    int nSteps = 0;
+    int nSteps = 100;
     float minValue = 0;
     float maxValue = 100;
     bool circleValues = false;
